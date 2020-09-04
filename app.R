@@ -22,6 +22,26 @@ test_data <- test_data$Name
 # my_error_count <- numeric(1000)
 # my_garbage <- lapply(1:1000,function(x){return(c(""))})
 
+makeCharaImage <- function(img_name){
+  renderUI({
+    tags$div(class = "chara-img-container",
+             tags$object(id = "c_image",class = "img",tags$img(src = paste0(img_name,".png"),height = "320px",width = "216px"))
+    ) 
+  })
+}
+
+makeAnsImage <- function(img_name){
+  renderUI({
+    tags$div(class = "ans-img-container",
+             tags$object(id = "c_image",class = "img",tags$img(src = paste0(img_name,".png"),height = "320px",width = "216px"))
+    ) 
+  })
+}
+
+
+
+
+
 makeButton <- function(btn_id,btn_value){
   renderUI({
     tags$div(class = "btn-container",
@@ -43,12 +63,12 @@ ui <- fluidPage(
    uiOutput("ExplanationButton"),
    # Game
    uiOutput("MemberID"),
-   uiOutput("BotText"),
    uiOutput("Showcase"),
+   uiOutput("ShowChara"),
    uiOutput("InputText"),
-   uiOutput("ErrorText"),
-   uiOutput("ErrorCount"),
    uiOutput("SubmitButton"),
+   uiOutput("ErrorCount"),
+   uiOutput("ErrorText"),
    # Explanation
    uiOutput("ExplanationText"),
    uiOutput("ReturnButton")
@@ -71,7 +91,7 @@ server <- function(input, output) {
     if(num == 0) output$Showcase <- renderUI({h3("しりとり")})
     else{
       output$Showcase <- renderUI({
-        tags$object( id = "image",class = "img",tags$img(src = paste0(num,".png"),height = "100px",width = "400px") )
+        tags$object( id = "image",class = "img",tags$img(src = paste0(num,".png"),height = "200px",width = "400px") )
       })
     }
     output$InputText <- renderUI({textInput("ans_text",label = h3("Your Answer"),value = "")})
@@ -88,7 +108,6 @@ server <- function(input, output) {
     if(x == 0) output$ErrorText <- renderUI({h3("You win")})
     else output$ErrorText <- renderUI({h3(paste0("You lose ",lose_text[x]))})
     output$ReturnButton <- makeButton("return_button","Return")
-    output$BotText <- renderUI({})
     output$Showcase <- renderUI({}) 
     output$InputText <- renderUI({})
     output$SubmitButton <- renderUI({})
@@ -136,7 +155,7 @@ server <- function(input, output) {
     error_count <<- 0
     ChangeAns(0)
     DeleteStart()
-    output$BotText <- renderUI({h3("Bot Answer")})
+    output$ShowChara <- makeCharaImage("chara")
     output$ErrorCount <- renderUI({h4(paste0("Your Error is ",error_count))})
     output$SubmitButton <- makeButton("submit_button","Submit")
     output$MemberID <- renderUI({tags$div(class = "hoge-container",  textInput("my_id", label = h3(""),value = id))})
