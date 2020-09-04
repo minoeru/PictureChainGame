@@ -1,4 +1,4 @@
 *.numbers
-*.Rhistory
-*.RData
+.Rhistory
+.RData
 rsconnect/
