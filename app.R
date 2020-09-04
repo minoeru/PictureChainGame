@@ -1,7 +1,5 @@
-# devtools::install_github("IshidaMotohiro/RMeCab")
 library(shiny)
 library(magrittr)
-# library(RMeCab)
 
 data <- read.csv("data.csv")
 error_text <- c("Look At The End","Please Enter Noun")
@@ -39,7 +37,7 @@ makeButton <- function(btn_id,btn_value){
 }
 
 ui <- fluidPage(
-   titlePanel("Happy Picture Shiritori"),
+   titlePanel("Happy Picture Chain Game"),
    # Title
    uiOutput("StartButton"),
    uiOutput("ExplanationButton"),
