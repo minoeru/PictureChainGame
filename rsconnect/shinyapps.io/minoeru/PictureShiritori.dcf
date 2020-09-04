@@ -1,0 +1,13 @@
+name: PictureShiritori
+title: PictureShiritori
+username:
+account: minoeru
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2752237
+bundleId: 3592600
+url: https://minoeru.shinyapps.io/PictureShiritori/
+when: 1599220974.66701
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: data.numbers
