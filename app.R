@@ -1,7 +1,7 @@
 library(shiny)
 library(magrittr)
 
-data <- read.csv("data.csv")
+data <- read.csv("data.csv",fileEncoding = "UTF-8")
 data_names <- data$Name %>% as.vector()
 error_text <- c("Check The First Letter","Please Enter a Noun")
 lose_text <- c("Using ん","Duplicate word","Error count 3")
@@ -17,7 +17,7 @@ my_garbage <- lapply(1:1000,function(x){return(c(""))})
 makeTitleImage <- function(){
   renderUI({
     tags$div(class = "title-img-container",
-             tags$object(id = "c_image",class = "img",tags$img(src = "title.png",height = "320px",width = "216px"))
+             tags$object(id = "c_image",class = "img",tags$img(src = "title.png"))
     )
   })
 }
