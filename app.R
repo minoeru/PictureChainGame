@@ -3,7 +3,7 @@ library(magrittr)
 
 data <- read.csv("data.csv")
 data_names <- data$Name %>% as.vector()
-error_text <- c("Look At The End","Please Enter Noun")
+error_text <- c("Check The First Letter","Please Enter a Noun")
 lose_text <- c("Using ん","Duplicate word","Error count 3")
 test_data <- read.csv("test.csv")
 test_data <- test_data$Name
@@ -25,7 +25,15 @@ makeCharaImage <- function(img_name){
 makeAnsImage <- function(img_name){
   renderUI({
     tags$div(class = "ans-img-container",
-             tags$object(id = "a_image",class = "img",tags$img(src = paste0(img_name,".png"),height = "2o0px",width = "400px"))
+             tags$object(id = "a_image",class = "img",tags$img(src = paste0(img_name,".png"),height = "200px",width = "400px"))
+    ) 
+  })
+}
+
+makeLifeImage <- function(img_name){
+  renderUI({
+    tags$div(class = "life-img-container",
+             tags$object(id = "l_image",class = "img",tags$img(src = paste0("life",img_name,".png"),height = "100px",width = "200px"))
     ) 
   })
 }
@@ -83,8 +91,9 @@ server <- function(input, output) {
   
   ErrorIndication <- function(x,id){
     output$ErrorText <- renderUI({div(error_text[x],style = "color:red")})
-    my_error_count[id] <- my_error_count[id] + 1
-    output$ErrorCount <- renderUI({h4(paste0("Your Error is ",my_error_count[id]))})
+    my_error_count[id] <<- my_error_count[id] + 1
+    # output$ErrorCount <- renderUI({h4(paste0("Your Error is ",my_error_count[id]))})
+    output$ErrorCount <- makeLifeImage(3 - my_error_count[id])
     output$InputText <- renderUI({textInput("ans_text",label = h3("Your Answer"),value = "")})
   }
   
@@ -134,10 +143,12 @@ server <- function(input, output) {
     ChangeAns(0)
     DeleteStart()
     output$ShowChara <- makeCharaImage("chara")
-    output$ErrorCount <- renderUI({h4(paste0("Your Error is ",error_count))})
+    # output$ErrorCount <- renderUI({h4(paste0("Your Error is ",error_count))})
+    
+    output$ErrorCount <- makeLifeImage(3)
+    
     output$SubmitButton <- makeButton("submit_button","Submit")
     output$MemberID <- renderUI({tags$div(class = "hoge-container",  textInput("my_id", label = h3(""),value = id))})
-    
   })
   
   # return process
@@ -186,7 +197,7 @@ server <- function(input, output) {
         }
       }
     }
-    if(error_count >= 3) Termination(3) # Game Over3
+    if(my_error_count[id] >= 3) Termination(3) # Game Over3
   })
 }
 
