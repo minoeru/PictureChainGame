@@ -219,5 +219,4 @@ server <- function(input, output) {
     if(my_error_count[id] >= 3) Termination(3) # Game Over3
   })
 }
-
 shinyApp(ui = ui, server = server)
