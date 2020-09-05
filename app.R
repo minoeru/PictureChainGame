@@ -14,6 +14,14 @@ my_bot_ans[1:1000] <- "しりとり"
 my_error_count <- numeric(1000)
 my_garbage <- lapply(1:1000,function(x){return(c(""))})
 
+makeTitleImage <- function(){
+  renderUI({
+    tags$div(class = "title-img-container",
+             tags$object(id = "c_image",class = "img",tags$img(src = "title.png",height = "320px",width = "216px"))
+    )
+  })
+}
+
 makeCharaImage <- function(img_name,sbn){
   renderUI({
     tags$div(class = "chara-img-container",
@@ -54,7 +62,8 @@ makeButton <- function(btn_id,btn_value){
 
 ui <- fluidPage(
    tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),tags$script(src = "script.js")),
-   titlePanel("Happy Picture Chain Game"),
+   uiOutput("Title"),
+   # titlePanel("Happy Picture Chain Game"),
    # Title
    uiOutput("StartButton"),
    uiOutput("ExplanationButton"),
@@ -75,7 +84,9 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   ######## functions ##########################################
+  
   MakeStart <- function(){
+    output$Title <- makeTitleImage()
     output$StartButton <- makeButton("start_button","Start")
     output$ExplanationButton <- makeButton("explanation_button","Explanation")
   }
@@ -162,6 +173,7 @@ server <- function(input, output) {
     my_error_count[id] <<- 0
     ChangeAns(0)
     DeleteStart()
+    output$Title <- renderUI({})
     output$ShowChara <- makeCharaImage("chara",0)
     output$ErrorCount <- makeLifeImage(3)
     output$SubmitButton <- makeButton("submit_button","Submit")
