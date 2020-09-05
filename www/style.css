@@ -13,6 +13,7 @@ body {
     align-items: center;
     overflow-x: hidden;
     background: linear-gradient(0deg, rgba(234, 145, 145, 1) 0%, rgba(255, 255, 255, 1) 100%);
+    background-attachment: fixed;
 }
 
 .container-fluid {
@@ -71,7 +72,10 @@ button::before {
 
 #StartButton,
 #ExplanationButton,
-#ReturnButton {
+#ReturnButton,
+#SubmitButton,
+#Tweet_button,
+#ErrorText {
     width: 100%;
     text-align: center;
 }
@@ -104,7 +108,7 @@ button::before {
     width: 50%;
     position: relative;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -70px);
 }
 
 #Showcase > h3 {
@@ -117,12 +121,28 @@ button::before {
 
 #ShowChara {
     width: 50%;
-    transform: translateY(22px);
+    transform: translateY(-50px);
     z-index: 1;
 }
 
 @media screen and (max-width:600px) {
     #Showcase {
-        transform: translateX(-80%);
+        transform: translate(-80%, -70px);
     }
+}
+
+.control-label {
+    width: 100%;
+    text-align: center;
+}
+
+.life-img-container {
+    transform: scale(.5);
+}
+
+#InputText,
+#SubmitButton,
+#ErrorCount,
+#ErrorText {
+    transform: translateY(-50px);
 }
