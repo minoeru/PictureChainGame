@@ -33,7 +33,7 @@ makeCharaImage <- function(img_name,sbn){
 makeAnsImage <- function(img_name){
   renderUI({
     tags$div(class = "ans-img-container",
-             tags$object(id = "a_image",class = "img",tags$img(src = paste0(img_name,".png"),height = "200px",width = "400px"))
+             tags$object(id = "a_image",class = "img",tags$img(src = paste0(img_name,".png"),height = "auto",width = "300px"))
     ) 
   })
 }
@@ -41,7 +41,7 @@ makeAnsImage <- function(img_name){
 makeLifeImage <- function(img_name){
   renderUI({
     tags$div(class = "life-img-container",
-             tags$object(id = "l_image",class = "img",tags$img(src = paste0("life",img_name,".png"),height = "100px",width = "200px"))
+             tags$object(id = "l_image",class = "img",tags$img(src = paste0("life",img_name,".png"),height = "auto",width = "auto"))
     ) 
   })
 }
