@@ -2,25 +2,17 @@ library(shiny)
 library(magrittr)
 
 data <- read.csv("data.csv")
+data_names <- data$Name %>% as.vector()
 error_text <- c("Look At The End","Please Enter Noun")
 lose_text <- c("Using ん","Duplicate word","Error count 3")
-
-data_names <- data$Name %>% as.vector()
-
 test_data <- read.csv("test.csv")
 test_data <- test_data$Name
 
-# 上で配列1000個作る
-# start時に乱数でID作る
-# IDを隠しておく
-# ここで初期化するか〜
-# hoge[ran]を<<で変更してアクセス
-
-# my_data_names <- lapply(1:1000,function(x){return(c(""))})
-# my_bot_ans <- numeric(1000)
-# my_bot_ans[1:1000] <- "しりとり"
-# my_error_count <- numeric(1000)
-# my_garbage <- lapply(1:1000,function(x){return(c(""))})
+my_data_names <- lapply(1:1000,function(x){return(c(""))})
+my_bot_ans <- numeric(1000)
+my_bot_ans[1:1000] <- "しりとり"
+my_error_count <- numeric(1000)
+my_garbage <- lapply(1:1000,function(x){return(c(""))})
 
 makeCharaImage <- function(img_name){
   renderUI({
@@ -33,14 +25,10 @@ makeCharaImage <- function(img_name){
 makeAnsImage <- function(img_name){
   renderUI({
     tags$div(class = "ans-img-container",
-             tags$object(id = "c_image",class = "img",tags$img(src = paste0(img_name,".png"),height = "320px",width = "216px"))
+             tags$object(id = "a_image",class = "img",tags$img(src = paste0(img_name,".png"),height = "2o0px",width = "400px"))
     ) 
   })
 }
-
-
-
-
 
 makeButton <- function(btn_id,btn_value){
   renderUI({
@@ -53,7 +41,7 @@ makeButton <- function(btn_id,btn_value){
                btn_value
              )
     )
-  }) %>% return()
+  })
 }
 
 ui <- fluidPage(
@@ -89,18 +77,14 @@ server <- function(input, output) {
   
   ChangeAns <- function(num){
     if(num == 0) output$Showcase <- renderUI({h3("しりとり")})
-    else{
-      output$Showcase <- renderUI({
-        tags$object( id = "image",class = "img",tags$img(src = paste0(num,".png"),height = "200px",width = "400px") )
-      })
-    }
+    else  output$Showcase <- makeCharaImage(num)
     output$InputText <- renderUI({textInput("ans_text",label = h3("Your Answer"),value = "")})
   }
   
-  ErrorIndication <- function(x){
+  ErrorIndication <- function(x,id){
     output$ErrorText <- renderUI({div(error_text[x],style = "color:red")})
-    error_count <<- error_count + 1
-    output$ErrorCount <- renderUI({h4(paste0("Your Error is ",error_count))})
+    my_error_count[id] <- my_error_count[id] + 1
+    output$ErrorCount <- renderUI({h4(paste0("Your Error is ",my_error_count[id]))})
     output$InputText <- renderUI({textInput("ans_text",label = h3("Your Answer"),value = "")})
   }
   
@@ -109,6 +93,7 @@ server <- function(input, output) {
     else output$ErrorText <- renderUI({h3(paste0("You lose ",lose_text[x]))})
     output$ReturnButton <- makeButton("return_button","Return")
     output$Showcase <- renderUI({}) 
+    output$ShowChara <- renderUI({}) 
     output$InputText <- renderUI({})
     output$SubmitButton <- renderUI({})
     output$ErrorCount <- renderUI({})
@@ -135,24 +120,17 @@ server <- function(input, output) {
     output$ReturnButton <- makeButton("return_button","Return")
   })
   
-  
-  
   # Game page
   observeEvent(input$start_button,{
-    data_names <<- data$Name %>% as.vector()
+    data_names <- data$Name %>% as.vector()
     # 乱数生成
     id <- floor(runif(1) * 1000)
-    # my_data_names[[id]] <- data$Name %>% as.vector()
-    # my_data_names <<- my_data_names
-    # my_bot_ans[id] <- "しりとり"
-    # my_bot_ans <<- my_bot_ans
-    # my_garbage[[id]] <- c("")
-    # my_garbage <<- my_garbage
-    # my_error_count[id] <- 0
-    # my_error_count <<-  my_error_count
-    bot_ans <<- "しりとり"
-    garbage <<- c("")
-    error_count <<- 0
+    my_data_names[[id]] <-  data_names
+    my_data_names <<-  my_data_names
+    my_bot_ans[id] <<- "しりとり"
+    my_garbage[[id]] <- c("")
+    my_garbage <<- my_garbage
+    my_error_count[id] <<- 0
     ChangeAns(0)
     DeleteStart()
     output$ShowChara <- makeCharaImage("chara")
@@ -173,15 +151,10 @@ server <- function(input, output) {
   # submit answer
   observeEvent(input$submit_button,{
     
-    your_id <- as.numeric(input$my_id)
-    
-    # data_names <- my_data_names[your_id]
-    # bot_ans <- my_bot_ans[your_id]
-    # garbage <- my_garbage[your_id]
-    # 
-    # print(data_names)
-    # print(bot_ans)
-    # print(garbage)
+    id <- as.numeric(input$my_id)
+    data_names <- my_data_names[[id]]
+    bot_ans <- my_bot_ans[id]
+    garbage <- my_garbage[[id]]
     
     your_ans <- input$ans_text
     your_ans <- chartr("[ア-ン]","[あ-ん]",your_ans)
@@ -189,30 +162,26 @@ server <- function(input, output) {
     bot_ans <- chartr("[ぁぃぅぇぉっゃゅょゎ]","[あいうえおつやゆよわ]",bot_ans)
     bot_ans <- gsub("ー","",bot_ans)
     
-    if(chartr("[ア-ン]","[あ-ん]",substr(your_ans,1,1)) !=  substr(bot_ans,nchar(bot_ans),nchar(bot_ans))) ErrorIndication(1) # Error1
-    # else if(RMeCabC(your_ans) %>% unlist() %>% names() %>% grep("名詞",.) %>% length() != 1) ErrorIndication(2) # Error2
-    else if( is.na(match(your_ans,test_data)) ) ErrorIndication(2) # Error2
+    if(chartr("[ア-ン]","[あ-ん]",substr(your_ans,1,1)) !=  substr(bot_ans,nchar(bot_ans),nchar(bot_ans))) ErrorIndication(1,id) # Error1
+    else if( is.na(match(your_ans,test_data)) ) ErrorIndication(2,id) # Error2
     else{
       your_ans <- chartr("[ア-ン]","[あ-ん]",your_ans)
       if(substring(your_ans,nchar(your_ans),nchar(your_ans)) == "ん") Termination(1) # Game Over1
       else if(!is.na(match(your_ans,garbage))) Termination(2) # Game Over2
       else{
         output$ErrorText <- renderUI({})
-        garbage <<- append(garbage,your_ans,length(garbage))
+        my_garbage[[id]] <- append(garbage,your_ans,length(garbage))
+        my_garbage <<- my_garbage
         last_char <- substring(your_ans,nchar(your_ans),nchar(your_ans))
         tmp <- grep(last_char,substr(data_names,1,1))
         if(length(tmp) == 0) Termination(0)
         else{
           bot_ans <- ifelse(length(tmp) == 1,data_names[tmp],data_names[sample(tmp,1)])
-          
-          # my_bot_ans[your_id] <<- bot_ans
-          # my_garbage[your_id] <<- append(garbage,bot_ans,length(garbage))
-          # my_data_names[your_id] <<- data_names[data_names != bot_ans]
-          
-          bot_ans <<- bot_ans
-          garbage <<- append(garbage,bot_ans,length(garbage))
-          data_names <<- data_names[data_names != bot_ans]
-          
+          my_bot_ans[id] <<- bot_ans
+          my_garbage[[id]] <- append(garbage,bot_ans,length(garbage))
+          my_garbage <<- my_garbage
+          my_data_names[[id]] <- data_names[data_names != bot_ans]
+          my_data_names <<- my_data_names
           ChangeAns(data[data$Name == bot_ans, ]$No)
         }
       }
