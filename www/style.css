@@ -101,7 +101,11 @@ button::before {
 }
 
 #MemberID {
-    display: none;
+    /*display: none;*/
+    visibility:hidden;
+    width:0;
+    height:0;
+    
 }
 
 #Showcase {

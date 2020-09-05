@@ -4,7 +4,8 @@ library(magrittr)
 data <- read.csv("data.csv",fileEncoding = "UTF-8")
 data_names <- data$Name %>% as.vector()
 error_text <- c("Check The First Letter","Please Enter a Noun")
-lose_text <- c("Using ん","Duplicate word","Error count 3")
+# lose_text <- c("Using ん","Duplicate word","Error count 3")
+lose_text <- c("","","")
 test_data <- read.csv("test.csv")
 test_data <- test_data$Name
 
