@@ -112,7 +112,7 @@ button::before {
     width: 50%;
     position: relative;
     left: 50%;
-    transform: translate(-50%, -70px);
+    transform: translate(-50%, -50px);
 }
 
 #Showcase > h3 {
@@ -125,7 +125,7 @@ button::before {
 
 #ShowChara {
     width: 50%;
-    transform: translateY(-50px);
+    transform: translateY(-30px);
     z-index: 1;
 }
 
