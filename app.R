@@ -1,7 +1,7 @@
 library(shiny)
 library(magrittr)
 
-data <- read.csv("data.csv")
+data <- read.csv("data.csv",,fileEncoding = "UTF-8")
 data_names <- data$Name %>% as.vector()
 error_text <- c("Check The First Letter","Please Enter a Noun")
 lose_text <- c("Using ん","Duplicate word","Error count 3")
@@ -53,6 +53,7 @@ makeButton <- function(btn_id,btn_value){
 }
 
 ui <- fluidPage(
+  tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),tags$script(src = "script.js")),
    titlePanel("Happy Picture Chain Game"),
    # Title
    uiOutput("StartButton"),
