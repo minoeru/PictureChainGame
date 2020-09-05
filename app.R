@@ -1,7 +1,7 @@
 library(shiny)
 library(magrittr)
 
-data <- read.csv("data.csv",,fileEncoding = "UTF-8")
+data <- read.csv("data.csv")
 data_names <- data$Name %>% as.vector()
 error_text <- c("Check The First Letter","Please Enter a Noun")
 lose_text <- c("Using ん","Duplicate word","Error count 3")
@@ -14,10 +14,10 @@ my_bot_ans[1:1000] <- "しりとり"
 my_error_count <- numeric(1000)
 my_garbage <- lapply(1:1000,function(x){return(c(""))})
 
-makeCharaImage <- function(img_name){
+makeCharaImage <- function(img_name,sbn){
   renderUI({
     tags$div(class = "chara-img-container",
-             tags$object(id = "c_image",class = "img",tags$img(src = paste0(img_name,".png"),height = "320px",width = "216px"))
+             tags$object(id = "c_image",class = "img",tags$img(src = paste0(img_name,sbn,".png"),height = "320px",width = "216px"))
     ) 
   })
 }
@@ -53,7 +53,7 @@ makeButton <- function(btn_id,btn_value){
 }
 
 ui <- fluidPage(
-  tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),tags$script(src = "script.js")),
+   tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),tags$script(src = "script.js")),
    titlePanel("Happy Picture Chain Game"),
    # Title
    uiOutput("StartButton"),
@@ -66,6 +66,7 @@ ui <- fluidPage(
    uiOutput("SubmitButton"),
    uiOutput("ErrorCount"),
    uiOutput("ErrorText"),
+   uiOutput("Tweet"),
    # Explanation
    uiOutput("ExplanationText"),
    uiOutput("ReturnButton")
@@ -86,21 +87,27 @@ server <- function(input, output) {
   
   ChangeAns <- function(num){
     if(num == 0) output$Showcase <- renderUI({h3("しりとり")})
-    else  output$Showcase <- makeCharaImage(num)
+    else  output$Showcase <- makeAnsImage(num)
     output$InputText <- renderUI({textInput("ans_text",label = h3("Your Answer"),value = "")})
   }
   
   ErrorIndication <- function(x,id){
     output$ErrorText <- renderUI({div(error_text[x],style = "color:red")})
     my_error_count[id] <<- my_error_count[id] + 1
-    # output$ErrorCount <- renderUI({h4(paste0("Your Error is ",my_error_count[id]))})
+    output$ShowChara <- makeCharaImage("chara",1)
     output$ErrorCount <- makeLifeImage(3 - my_error_count[id])
     output$InputText <- renderUI({textInput("ans_text",label = h3("Your Answer"),value = "")})
   }
   
   Termination <- function(x){
-    if(x == 0) output$ErrorText <- renderUI({h3("You win")})
-    else output$ErrorText <- renderUI({h3(paste0("You lose ",lose_text[x]))})
+    if(x == 0) {
+      output$ErrorText <- renderUI({h3("You win")})
+      output$Tweet <- TweetMake("You win ")
+    }
+    else {
+      output$ErrorText <- renderUI({h3(paste0("You lose ",lose_text[x]))})
+      output$Tweet <- TweetMake("You lose ")
+    }
     output$ReturnButton <- makeButton("return_button","Return")
     output$Showcase <- renderUI({}) 
     output$ShowChara <- renderUI({}) 
@@ -109,7 +116,19 @@ server <- function(input, output) {
     output$ErrorCount <- renderUI({})
     output$MemberID <- renderUI({})
   }
-
+  
+  TweetMake <- function(text){
+    renderUI({ 
+      hoge_tweet <- paste0("https://twitter.com/share?url=https://minoeru.shinyapps.io/PictureChainGame/&text=",text,"%20%23みすゲームジャム2020%20")
+      tags$div(class = "btn-container",
+               tags$button(
+                 id = "Tweet_button",class = "btn action-button","結果をツイートする",
+                 onclick = paste0( "window.open('", hoge_tweet ,"','_blank')" )
+               )
+      )
+    })
+  }
+  
   ##############################################################
   
   # make start page 
@@ -143,11 +162,8 @@ server <- function(input, output) {
     my_error_count[id] <<- 0
     ChangeAns(0)
     DeleteStart()
-    output$ShowChara <- makeCharaImage("chara")
-    # output$ErrorCount <- renderUI({h4(paste0("Your Error is ",error_count))})
-    
+    output$ShowChara <- makeCharaImage("chara",0)
     output$ErrorCount <- makeLifeImage(3)
-    
     output$SubmitButton <- makeButton("submit_button","Submit")
     output$MemberID <- renderUI({tags$div(class = "hoge-container",  textInput("my_id", label = h3(""),value = id))})
   })
@@ -157,6 +173,7 @@ server <- function(input, output) {
     output$ExplanationText <- renderUI({})
     output$ReturnButton <- renderUI({})
     output$ErrorText <- renderUI({})
+    output$Tweet <- renderUI({})
     MakeStart()
   })
   
@@ -182,6 +199,7 @@ server <- function(input, output) {
       else if(!is.na(match(your_ans,garbage))) Termination(2) # Game Over2
       else{
         output$ErrorText <- renderUI({})
+        output$ShowChara <- makeCharaImage("chara",0)
         my_garbage[[id]] <- append(garbage,your_ans,length(garbage))
         my_garbage <<- my_garbage
         last_char <- substring(your_ans,nchar(your_ans),nchar(your_ans))
@@ -201,5 +219,4 @@ server <- function(input, output) {
     if(my_error_count[id] >= 3) Termination(3) # Game Over3
   })
 }
-
 shinyApp(ui = ui, server = server)
