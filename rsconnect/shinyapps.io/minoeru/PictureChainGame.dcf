@@ -1,0 +1,13 @@
+name: PictureChainGame
+title: PictureChainGame
+username:
+account: minoeru
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2757405
+bundleId: 3597145
+url: https://minoeru.shinyapps.io/PictureChainGame/
+when: 1599340625.6043
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: data.numbers|Readme.md
